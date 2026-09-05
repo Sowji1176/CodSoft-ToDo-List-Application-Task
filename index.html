@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To-Do List Application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-text">
+      <h1>TO-DO LIST</h1>
+      <p class="tagline">Organize your day. Get things done.</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false">
+      <span class="theme-icon" id="themeIcon">&#9789;</span>
+      <span id="themeLabel">Dark Mode</span>
+    </button>
+  </header>
+
+  <!-- ===== STATISTICS ===== -->
+  <section class="stats" aria-label="Task statistics">
+    <div class="stat-card">
+      <span class="stat-value" id="statTotal">0</span>
+      <span class="stat-label">Total Tasks</span>
+    </div>
+    <div class="stat-card stat-completed">
+      <span class="stat-value" id="statCompleted">0</span>
+      <span class="stat-label">Completed</span>
+    </div>
+    <div class="stat-card stat-pending">
+      <span class="stat-value" id="statPending">0</span>
+      <span class="stat-label">Pending</span>
+    </div>
+  </section>
+
+  <!-- ===== ADD TASK ===== -->
+  <section class="add-task-card">
+    <h2>Add a New Task</h2>
+    <form id="taskForm" novalidate>
+      <div class="form-row">
+        <div class="field field-grow">
+          <label for="taskTitle">Task Title <span class="required">*</span></label>
+          <input type="text" id="taskTitle" placeholder="e.g. Complete Power BI Dashboard" autocomplete="off">
+          <p class="field-error" id="titleError" role="alert"></p>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field field-grow">
+          <label for="taskDescription">Description</label>
+          <textarea id="taskDescription" rows="2" placeholder="Optional details about this task"></textarea>
+        </div>
+      </div>
+
+      <div class="form-row form-row-cols">
+        <div class="field">
+          <label for="taskCategory">Category</label>
+          <select id="taskCategory">
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Study">Study</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="taskPriority">Priority</label>
+          <select id="taskPriority">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="taskDueDate">Due Date</label>
+          <input type="date" id="taskDueDate">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="addTaskBtn">Add Task</button>
+    </form>
+  </section>
+
+  <!-- ===== SEARCH + FILTER ===== -->
+  <section class="controls">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search tasks..." aria-label="Search tasks">
+    </div>
+    <div class="filter-row" role="group" aria-label="Filter tasks">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="pending">Pending</button>
+      <button class="filter-btn" data-filter="completed">Completed</button>
+      <button class="filter-btn" data-filter="high">High Priority</button>
+    </div>
+  </section>
+
+  <!-- ===== TASK LIST ===== -->
+  <section class="task-list-section">
+    <div id="taskList" class="task-list"></div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">&#9776;</div>
+      <h3 id="emptyTitle">No tasks yet</h3>
+      <p id="emptyText">Add your first task and start organizing your day.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===== EDIT TASK MODAL ===== -->
+<div class="modal-overlay" id="editModalOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <h2 id="editModalTitle">Edit Task</h2>
+    <form id="editForm" novalidate>
+      <div class="field">
+        <label for="editTitle">Task Title <span class="required">*</span></label>
+        <input type="text" id="editTitle" autocomplete="off">
+        <p class="field-error" id="editTitleError" role="alert"></p>
+      </div>
+      <div class="field">
+        <label for="editDescription">Description</label>
+        <textarea id="editDescription" rows="2"></textarea>
+      </div>
+      <div class="form-row form-row-cols">
+        <div class="field">
+          <label for="editCategory">Category</label>
+          <select id="editCategory">
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Study">Study</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="editPriority">Priority</label>
+          <select id="editPriority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="editDueDate">Due Date</label>
+          <input type="date" id="editDueDate">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="cancelEditBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="saveEditBtn">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DELETE CONFIRMATION MODAL ===== -->
+<div class="modal-overlay" id="deleteModalOverlay">
+  <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <h2 id="deleteModalTitle">Delete this task?</h2>
+    <p class="delete-modal-text">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="cancelDeleteBtn">Cancel</button>
+      <button type="button" class="btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
